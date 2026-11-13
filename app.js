@@ -168,7 +168,7 @@
     const o = sec.opener || { type: 'type' };
     const h2 = tx(h('h2', 'h1', { id: 'h-' + sec.id }), sec, 'headline', { rich: true });
     const sub = tx(h('p', 'sub'), sec, 'tagline');
-    const mark = h('img', 'mark', { src: 'assets/logo.webp', width: 31, height: 24, alt: '', 'aria-hidden': 'true', loading: 'lazy' });
+    const mark = h('img', 'mark', { src: 'assets/logo-mark.webp', width: 31, height: 20, alt: '', 'aria-hidden': 'true', loading: 'lazy' });
     if (o.type === 'type') {
       const sw = svgUse('swash'); sw.setAttribute('class', 'swash');
       return h('div', 'head rv', null, [mark, h2, sw, sub]);

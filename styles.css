@@ -214,3 +214,11 @@ button.ph:active{transform:scale(.98)}
 /* QA 2026-11-13: cover toggle and logo collided at 360-390 px; narrower cover toggle (2 x 50 px) and logo */
 .lt-cover{inset-inline-end:12px;width:100px}
 .cover-logo{width:min(34vw,180px)}
+
+/* 2026-11-14: logo tagline is live text so it follows the language (logo-mark.webp = script only) */
+.brand{display:flex;flex-direction:column;align-items:center}
+.brand img{display:block;width:100%;height:auto}
+.brand .slogan{margin-top:.2em;font:400 calc(var(--bw,180px)*.1)/1.2 var(--f-display);color:var(--white);white-space:nowrap}
+.cover-logo.brand{--bw:min(34vw,180px)}
+.foot-logo.brand{--bw:min(60vw,260px);width:var(--bw)}
+html:lang(he) .brand .slogan{font-size:calc(var(--bw,180px)*.095)}
