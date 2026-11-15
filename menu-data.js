@@ -262,7 +262,6 @@ window.MENU_DATA = {
         "type": "type"
       },
       "gallery": [
-        "g29",
         "g48"
       ]
     },
