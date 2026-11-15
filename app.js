@@ -274,6 +274,27 @@
     menu.append(h('section', 'sec kitchen', { 'aria-label': 'gallery' }, [tx(h('h3', 'gal-title'), KG, 'title'), strip(KG.items)]));
   }
 
+  /* chef's videos: muted loops that play only while on screen; tap-to-play with controls for reduced motion */
+  const RL = M.reels;
+  if (RL && RL.items && RL.items.length) {
+    const vids = RL.items.map(r => {
+      const v = h('video', null, { src: 'assets/video/' + r.file + '.mp4', poster: 'assets/video/' + r.file + '.webp',
+        muted: '', playsinline: '', loop: '', preload: 'none', width: 360, height: 640 });
+      v.muted = true;
+      if (RM) v.controls = true;
+      bind(v, () => pick(r, 'alt'), { attr: 'aria-label' });
+      return v;
+    });
+    const box = h('div', 'gal reels', null, vids.map(v => h('figure', null, null, [v])));
+    menu.append(h('section', 'sec reels-sec', null, [tx(h('h3', 'gal-title'), RL, 'title'), box]));
+    if (!RM && 'IntersectionObserver' in window) {
+      const vio = new IntersectionObserver(es => es.forEach(e => {
+        if (e.isIntersecting) { const pr = e.target.play(); if (pr) pr.catch(() => {}); } else e.target.pause();
+      }), { threshold: 0.6 });
+      vids.forEach(v => vio.observe(v));
+    }
+  }
+
   /* ---------- chips ---------- */
   const track = $('#chips'), line = $('.chip-line', track);
   const chipMap = {};

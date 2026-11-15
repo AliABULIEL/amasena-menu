@@ -227,3 +227,7 @@ img.fade.ld{opacity:1}
 .mo :is(.chef,.gal-title,.gal figure,.note,.wplate,.d,.foot>*).in{opacity:1;translate:0 0}
 .mo .d .ptag{opacity:0;translate:-18px 0;transition:opacity .6s,translate .8s var(--ease);transition-delay:calc(var(--i,0)*80ms + .25s)}
 .mo .d.in .ptag{opacity:1;translate:0 0}
+
+/* chef's videos (9:16 reels) */
+.reels figure{width:58%}
+.reels video{display:block;width:100%;aspect-ratio:9/16;object-fit:cover;background:var(--bg-2)}
