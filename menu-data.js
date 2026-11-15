@@ -651,7 +651,7 @@ window.MENU_DATA = {
         "250": null,
         "330": null
       },
-      "photo": "p22",
+      "photo": null,
       "desc_short_ar": "",
       "desc_short_he": "",
       "badges": []
