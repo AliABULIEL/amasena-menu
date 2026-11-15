@@ -77,6 +77,8 @@ window.MENU_DATA = {
         "s38",
         "s42",
         "s41",
+        "sw08",
+        "sw38",
         "s39",
         "s00",
         "s02",
@@ -139,6 +141,11 @@ window.MENU_DATA = {
       "title_he": "ישר מהמטבח",
       "items": [
         {
+          "file": "r8-chef-promo",
+          "alt_ar": "الشيف منصور وأطباق أماسينا",
+          "alt_he": "השף מנסור ומנות אמסינה"
+        },
+        {
           "file": "r1-chef-seafood",
           "alt_ar": "الشيف منصور يقدّم مقلاة بحريات ساخنة",
           "alt_he": "השף מנסור מגיש מחבת פירות ים רותחת"
@@ -162,6 +169,16 @@ window.MENU_DATA = {
           "file": "r3-steak",
           "alt_ar": "ستيك على مقلاة ساخنة",
           "alt_he": "סטייק על מחבת לוהטת"
+        },
+        {
+          "file": "r6-table-salads",
+          "alt_ar": "طاولة مليانة سلطات",
+          "alt_he": "שולחן מלא בסלטים"
+        },
+        {
+          "file": "r7-bread-salad",
+          "alt_ar": "سلطة بسلة خبز مقرمشة",
+          "alt_he": "סלט בסלסלת לחם פריכה"
         }
       ]
     }
@@ -1303,6 +1320,22 @@ window.MENU_DATA = {
       "alt_he": "צלחת ברוטב פטריות",
       "confidence": "H",
       "use": "atmosphere"
+    },
+    "sw08": {
+      "src_file": "work/wa_new/w08.jpg",
+      "frame": "card",
+      "alt_ar": "سلطة خضار مع زيتون بصحن عميق",
+      "alt_he": "סלט ירקות עם זיתים בקערה עמוקה",
+      "confidence": "H",
+      "source": "marketing WhatsApp group, 2026-11-15"
+    },
+    "sw38": {
+      "src_file": "work/wa_new/w38.jpg",
+      "frame": "card",
+      "alt_ar": "سلطة بسلة خبز مقرمشة مع رمان",
+      "alt_he": "סלט בסלסלת לחם פריכה עם רימונים",
+      "confidence": "H",
+      "source": "marketing WhatsApp group, 2026-11-15"
     }
   },
   "_owner_questions": [
