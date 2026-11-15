@@ -73,14 +73,10 @@ window.MENU_DATA = {
       "gallery_title_ar": "من سلطاتنا",
       "gallery_title_he": "מהסלטים שלנו",
       "gallery": [
-        "s00",
-        "s04",
-        "s02",
-        "s06",
-        "s08",
-        "s09",
-        "s39",
-        "s11"
+        "s40",
+        "s38",
+        "s42",
+        "s41"
       ]
     },
     "footer": {
@@ -195,14 +191,14 @@ window.MENU_DATA = {
     },
     {
       "id": "world",
-      "title_ar": "باستا ونودلز",
-      "title_he": "פסטה ונודלס",
-      "headline_ar": "باستا ونودلز",
-      "headline_he": "פסטה ונודלס",
+      "title_ar": "أطباق من العالم",
+      "title_he": "מנות מן העולם",
+      "headline_ar": "أطباق من العالم",
+      "headline_he": "מנות מן העולם",
       "tagline_ar": "",
       "tagline_he": "",
-      "chip_ar": "باستا",
-      "chip_he": "פסטה",
+      "chip_ar": "من العالم",
+      "chip_he": "מהעולם",
       "opener": {
         "type": "type"
       }
@@ -991,6 +987,46 @@ window.MENU_DATA = {
       "alt_ar": "سلطة ملفوف وفلفل وجوز في وعاء أسود",
       "alt_he": "סלט כרוב, פלפל ואגוזי מלך בקערה שחורה",
       "confidence": "H"
+    },
+    "s40": {
+      "src_id": 40,
+      "frame": "card",
+      "caption_ar": "سلطة الموسم",
+      "caption_he": "סלט העונה",
+      "alt_ar": "سلطة الموسم: سبانخ وتين وكاجو",
+      "alt_he": "סלט העונה: תרד, תאנים וקשיו",
+      "confidence": "H",
+      "name_source": "restaurant marketing chat, 2026-11-15"
+    },
+    "s38": {
+      "src_id": 38,
+      "frame": "card",
+      "caption_ar": "سلطة الحديقة البنفسجية",
+      "caption_he": "סלט הגינה הסגולה",
+      "alt_ar": "سلطة الحديقة البنفسجية: ملفوف أحمر وفجل",
+      "alt_he": "סלט הגינה הסגולה: כרוב סגול וצנונית",
+      "confidence": "H",
+      "name_source": "restaurant marketing chat, 2026-11-15"
+    },
+    "s42": {
+      "src_id": 42,
+      "frame": "card",
+      "caption_ar": "ملفوف مع الأناناس",
+      "caption_he": "כרוב עם אננס",
+      "alt_ar": "سلطة ملفوف مع شرائح أناناس",
+      "alt_he": "סלט כרוב עם רצועות אננס",
+      "confidence": "H",
+      "name_source": "restaurant marketing chat, 2026-11-15"
+    },
+    "s41": {
+      "src_id": 41,
+      "frame": "card",
+      "caption_ar": "فتوش",
+      "caption_he": "פטוש",
+      "alt_ar": "فتوش مع جبنة مبشورة",
+      "alt_he": "פטוש עם גבינה מגורדת",
+      "confidence": "H",
+      "name_source": "restaurant marketing chat, 2026-11-15"
     },
     "s39": {
       "src_id": 39,
