@@ -272,7 +272,7 @@ window.MENU_DATA = {
     {
       "id": "merguez",
       "section": "starters",
-      "name_ar": "نقانق مرقاز",
+      "name_ar": "نقانق ميرجيز",
       "name_he": "נקניקיות מרגז",
       "desc_ar": "",
       "desc_he": "",
