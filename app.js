@@ -334,5 +334,21 @@
   ltBar.addEventListener('click', () => setLang(other()));
 
   setLang(resolveLang(), true);
+
+  /* ---------- motion: mark elements as they enter; CSS animates (html.mo is unset for reduced motion) ---------- */
+  if (document.documentElement.classList.contains('mo')) {
+    const els = $$('.poster:not(.cover), .offer, .chef, .gal-title, .gal figure, .note, .wplate, .d, .foot > *');
+    if ('IntersectionObserver' in window) {
+      const io = new IntersectionObserver(es => es.forEach(e => {
+        if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+      }), { rootMargin: '0px 0px -5% 0px' });
+      els.forEach(el => {
+        const sib = Array.prototype.indexOf.call(el.parentElement.children, el);
+        el.style.setProperty('--i', Math.min(sib, 5));   /* stagger neighbours that enter together */
+        io.observe(el);
+      });
+    } else els.forEach(el => el.classList.add('in'));
+  }
+
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(placeLine);
 })();
