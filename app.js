@@ -1,20 +1,35 @@
-/* Amasina digital menu. Vanilla JS, no framework. Data: menu-data.js (window.MENU_DATA). */
+/* Amasina digital menu, variant A "Instagram poster menu". Vanilla JS, no framework.
+   Data: menu-data.js (window.MENU_DATA, proofread names and prices) and
+   marketing-copy.js (window.MARKETING, optional; any missing key renders nothing). */
 (() => {
   'use strict';
   const D = window.MENU_DATA;
   if (!D) return;
+  const MK = window.MARKETING || {};
   const M = D.marketing, U = M.ui, P = D.photos;
   const $ = (s, r = document) => r.querySelector(s);
   const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
   const RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const C = navigator.connection || {};
-  const LITE = RM || !!C.saveData || /(^|-)2g$/.test(C.effectiveType || '');
-  const IMG = 'assets/img/', VID = 'assets/video/';
-  const TITLES = { ar: 'Amasina · أماسينا — المنيو', he: 'Amasina · אמסינה — התפריט' };
+  const IMG = D.img_dir || 'assets/img/';
+  const PST = 'assets/img/a/';
+  const WEIGHTS = ['250', '330'];
+  const TITLES = { ar: 'أماسينا | المنيو', he: 'אמסינה | תפריט' };
+  /* section posters: atmosphere photos only, never labelled as a dish; null = typographic poster */
+  const POSTERS = { starters: 'pst-chef', specials: 'pst-cut', meats: 'pst-grill', fish: null, world: null };
   let lang = 'ar';
+  /* lock poster height to the first screen (no jump when the mobile URL bar hides) */
+  const lockH = () => document.documentElement.style.setProperty('--sh', window.innerHeight + 'px');
+  lockH();
+  let lastW = window.innerWidth;
+  window.addEventListener('resize', () => { if (window.innerWidth !== lastW) { lastW = window.innerWidth; lockH(); } });
 
   const pick = (o, k) => (o && o[k + '_' + lang]) || '';
+  const str = v => (typeof v === 'string' ? v.trim() : '');
+  const mpick = (o, k) => str(o && o[k + '_' + lang]);
   const get = path => path.split('.').reduce((o, k) => (o == null ? o : o[k]), D);
+  const isNum = v => typeof v === 'number' && isFinite(v);
+  const pad = n => String(n).padStart(2, '0');
+  const TOTAL = pad(D.sections.length);
 
   function h(tag, cls, attrs, kids) {
     const el = document.createElement(tag);
@@ -23,247 +38,240 @@
     if (kids) el.append(...kids);
     return el;
   }
-  function svgUse(id) {
-    const ns = 'http://www.w3.org/2000/svg';
-    const s = document.createElementNS(ns, 'svg');
-    s.setAttribute('aria-hidden', 'true');
-    s.setAttribute('focusable', 'false');
-    const u = document.createElementNS(ns, 'use');
-    u.setAttribute('href', '#' + id);
-    s.append(u);
-    return s;
-  }
 
-  /* text with *keyword* -> <em class="kw">, optional per-word spans (no innerHTML) */
-  function rich(el, txt, words) {
+  /* *keyword* -> red */
+  function rich(el, txt) {
     el.textContent = '';
-    let i = 0;
-    const fill = (target, part) => {
-      if (!words) { target.append(part); return; }
-      part.split(/(\s+)/).forEach(w => {
-        if (!w) return;
-        if (/^\s+$/.test(w)) target.append(w);
-        else target.append(h('span', 'w', { style: '--i:' + i++ }, [w]));
-      });
-    };
     String(txt).split('*').forEach((part, k) => {
-      if (!part) return;
-      if (k % 2) { const em = h('em', 'kw'); fill(em, part); el.append(em); } else fill(el, part);
+      if (part) el.append(k % 2 ? h('em', 'kw', null, [part]) : part);
     });
   }
+  /* headline + red_word (first occurrence) -> red; falls back to *keyword* syntax */
+  function redWord(el, txt, red) {
+    el.textContent = '';
+    if (!txt) return;
+    const i = red ? txt.indexOf(red) : -1;
+    if (i < 0) { rich(el, txt); return; }
+    if (i) el.append(txt.slice(0, i));
+    el.append(h('em', 'kw', null, [red]));
+    if (i + red.length < txt.length) el.append(txt.slice(i + red.length));
+  }
 
-  /* bindings: re-applied on every language switch */
+  /* bindings, re-applied on every language switch */
   const binds = [];
-  function bind(el, fn, opt = {}) { binds.push({ el, fn, ...opt }); }
+  const renders = [];
+  function bind(el, fn, opt = {}) { binds.push({ el, fn, ...opt }); return el; }
+  function render(fn) { renders.push(fn); return fn; }
   function applyBinds() {
     for (const b of binds) {
       const v = b.fn();
       if (b.attr) b.el.setAttribute(b.attr, v);
-      else if (b.rich) rich(b.el, v, b.words);
+      else if (b.rich) rich(b.el, v);
       else b.el.textContent = v;
+      if (b.hide) b.el.hidden = !v;
     }
+    renders.forEach(fn => fn());
   }
-  const tx = (el, obj, key, opt) => { bind(el, () => pick(obj, key), opt); return el; };
+  const tx = (el, obj, key, opt) => bind(el, () => pick(obj, key), opt);
 
-  /* ---------- static markup bindings ---------- */
+  /* ---------- static markup ---------- */
   $$('[data-t]').forEach(el => {
     const path = el.dataset.t;
     bind(el, () => get(path + '_' + lang) || '', {
-      rich: el.hasAttribute('data-rich'), words: el.hasAttribute('data-words'), attr: el.dataset.attr
+      rich: el.hasAttribute('data-rich'), attr: el.dataset.attr, hide: el.hasAttribute('data-opt')
     });
   });
   $$('[data-price]').forEach(el => {
     const v = M.salad_offer.options[+el.dataset.price].price;
     el.textContent = v == null ? '' : String(v);
   });
-  const LOGO_ALT = () => 'Amasina – ' + pick(M.brand, 'slogan');
-  $$('img[src*="logo"]').forEach(img => { if (img.alt) bind(img, LOGO_ALT, { attr: 'alt' }); });
+  const logoAlt = () => 'Amasina, ' + pick(M.brand, 'slogan');
+  $$('img[src*="logo"]').forEach(img => bind(img, logoAlt, { attr: 'alt' }));
   bind($('#lb-x'), () => pick(U, 'close'), { attr: 'aria-label' });
   $('#ig').href = M.footer.instagram_url;
   $('#maps').href = M.footer.maps_url;
 
-  /* ---------- images ---------- */
-  function photoImg(key, sizes, widths) {
-    const img = h('img', null, {
-      src: IMG + key + '-720.webp',
-      srcset: widths.map(w => `${IMG}${key}-${w}.webp ${w}w`).join(', '),
-      sizes, width: 1080, height: 1350, loading: 'lazy', decoding: 'async'
-    });
+  /* logo block with the live slogan */
+  function brand() {
+    const img = h('img', null, { src: 'assets/logo-mark.webp', srcset: 'assets/logo-mark.webp 360w, assets/logo-mark-720.webp 720w',
+      sizes: '128px', width: 720, height: 472, loading: 'lazy', decoding: 'async' });
+    bind(img, logoAlt, { attr: 'alt' });
+    return h('div', 'brand', null, [img, bind(h('span', 'slogan', { 'aria-hidden': 'true' }), () => pick(M.brand, 'slogan'))]);
+  }
+  function posterTop(n) {
+    return [brand(), h('bdi', 'pst-idx num', { dir: 'ltr', 'aria-hidden': 'true' }, [h('b', null, null, [pad(n)]), ' / ' + TOTAL])];
+  }
+  $('#top-salads').append(...posterTop(1));
+
+  /* ---------- cover, chef, offer, closing: marketing copy ---------- */
+  render(() => {
+    const c = MK.cover || {};
+    const head = mpick(c, 'headline');
+    if (head) redWord($('#hero'), head, mpick(c, 'red_word'));
+    else rich($('#hero'), pick(M.cover, 'headline'));
+    $('#hero-sub').textContent = mpick(c, 'sub') || pick(M.cover, 'subline');
+
+    const ch = MK.chef || {};
+    const t = mpick(ch, 'title'), x = mpick(ch, 'text');
+    $('#chef-t').textContent = t;
+    $('#chef-x').textContent = x;
+    $('#chef-x').hidden = !x;
+    $('#chef').hidden = !t && !x;
+
+    const o = MK.offer || {};
+    const hook = mpick(o, 'hook'), plainHead = pick(M.salad_offer, 'headline').replace(/\*/g, '');
+    const hk = $('#offer-hook');
+    hk.textContent = hook === plainHead ? '' : hook;   // never repeat the poster headline
+    hk.hidden = !hk.textContent;
+    const sub = $('#offer-sub');
+    sub.textContent = mpick(o, 'sub');
+    sub.hidden = !sub.textContent;
+
+    const cl = $('#closing');
+    cl.textContent = str((MK.closing || {})[lang]);
+    cl.hidden = !cl.textContent;
+    $('.foot-thanks').hidden = !!cl.textContent;   /* the closing line already says it */
+  });
+
+  /* ---------- images (fade in once loaded) ---------- */
+  function fadeImg(attrs) {
+    const img = h('img', 'fade', { loading: 'lazy', decoding: 'async', ...attrs });
+    const done = () => img.classList.add('ld');
+    img.addEventListener('load', done);
+    img.addEventListener('error', done);
+    if (img.complete) done();
+    return img;
+  }
+  function photoImg(key, sizes, widths, w, hgt) {
+    const img = fadeImg({ src: IMG + key + '-' + widths[0] + '.webp',
+      srcset: widths.map(x => `${IMG}${key}-${x}.webp ${x}w`).join(', '), sizes, width: w, height: hgt });
     bind(img, () => pick(P[key], 'alt'), { attr: 'alt' });
     return img;
   }
-  const strip = $('#strip');
-  M.salad_offer.strip.forEach(k => {
-    strip.append(h('div', 'frame', null, [h('div', 'ph', null, [photoImg(k, '(min-width:600px) 190px, 34vw', [360, 720])])]));
-  });
+
   const gal = $('#gallery');
-  M.salad_offer.gallery.forEach(k => {
-    const fig = h('figure', 'frame', null, [h('div', 'ph', null, [photoImg(k, '(min-width:600px) 340px, 62vw', [360, 720])])]);
-    if (P[k] && P[k].caption_ar) fig.append(tx(h('figcaption'), P[k], 'caption'));
+  M.salad_offer.gallery.forEach((k, i) => {
+    const fig = h('figure', null, null, [
+      h('div', 'ph', null, [photoImg(k, '(min-width:600px) 420px, 76vw', [360, 720], 1080, 1350)]),
+      h('bdi', 'gnum num', { dir: 'ltr', 'aria-hidden': 'true' }, [pad(i + 1) + ' / ' + pad(M.salad_offer.gallery.length)])
+    ]);
+    if (P[k] && (P[k].caption_ar || P[k].caption_he)) fig.append(tx(h('figcaption'), P[k], 'caption', { hide: true }));
     gal.append(fig);
   });
 
   /* ---------- prices ---------- */
-  const unit = () => pick(U, 'weight_unit');
-  const priceEl = n => h('bdi', 'price', { dir: 'ltr' }, [h('span', 'n', null, [String(n)]), ' ', h('span', 'cur', null, [U.currency || '₪'])]);
-  const srEl = () => h('span', 'sr', null, [pick(U, 'price_aria')]);
-  const isNum = v => typeof v === 'number' && isFinite(v);
-  const state = {};   // section id -> { weight, any }
-  const cells = [];   // { item, slot, label, card }
-
-  function drawCell(c, roll) {
-    const { item, slot, label, card } = c;
-    slot.textContent = '';
-    if (label) label.textContent = '';
-    if (item.prices) {
-      const st = state[item.section];
-      if (!st.any) {
-        slot.append(srEl());
-        const wt = h('span', 'wt');
-        if (card) wt.textContent = `250 / 330 ${unit()}`;
-        else wt.append(h('bdi', null, { dir: 'ltr' }, ['250 /']), h('span', null, null, [`330 ${unit()}`]));
-        (label || slot).append(wt);
-        return;
-      }
-      const v = item.prices[st.weight];
-      const el = isNum(v) ? priceEl(v) : srEl();
-      if (roll && !RM) el.classList.add('roll');
-      slot.append(el);
-      if (label) label.append(h('span', 'wt', null, [`${st.weight} ${unit()}`]));
-      return;
-    }
-    slot.append(isNum(item.price) ? priceEl(item.price) : srEl());
-  }
-  const drawCells = sec => cells.forEach(c => { if (!sec || c.item.section === sec) drawCell(c, !!sec); });
+  const cur = () => h('span', 'cur', null, [U.currency || '₪']);
+  const srAsk = () => tx(h('span', 'sr'), U, 'price_aria');
 
   /* ---------- lightbox ---------- */
   const lb = $('#lb');
   let lbFrom = null, lbItem = null;
   function openLb(item, from) {
     lbItem = item; lbFrom = from;
-    const img = $('#lb-img');
-    img.src = IMG + item.photo + '-1080.webp';
-    img.alt = pick(P[item.photo], 'alt');
+    $('#lb-img').src = IMG + item.photo + '-1080.webp';
     fillLb();
     if (lb.showModal) lb.showModal(); else lb.setAttribute('open', '');
   }
   function fillLb() {
     if (!lbItem) return;
+    $('#lb-img').alt = pick(P[lbItem.photo], 'alt');
     $('#lb-name').textContent = pick(lbItem, 'name');
-    $('#lb-desc').textContent = pick(lbItem, 'desc');
+    const d = $('#lb-desc');
+    d.textContent = dishDesc(lbItem);
+    d.hidden = !d.textContent;
   }
   $('#lb-x').addEventListener('click', () => lb.close());
   lb.addEventListener('click', e => { if (e.target === lb) lb.close(); });
   lb.addEventListener('close', () => { lbItem = null; if (lbFrom) lbFrom.focus(); });
 
-  /* ---------- badges ---------- */
-  function badge(b) {
-    if (b === 'preorder') return tx(h('span', 'bdg bdg-pre'), U, 'preorder');
-    if (b === 'kg1') return tx(h('span', 'bdg'), U, 'kg1');
-    return null;
-  }
-
-  /* ---------- menu sections ---------- */
-  function opener(sec) {
-    const o = sec.opener || { type: 'type' };
-    const h2 = tx(h('h2', 'h1', { id: 'h-' + sec.id }), sec, 'headline', { rich: true });
-    const sub = tx(h('p', 'sub'), sec, 'tagline');
-    const mark = h('img', 'mark', { src: 'assets/logo-mark.webp', width: 31, height: 20, alt: '', 'aria-hidden': 'true', loading: 'lazy' });
-    if (o.type === 'type') {
-      const sw = svgUse('swash'); sw.setAttribute('class', 'swash');
-      return h('div', 'head rv', null, [mark, h2, sw, sub]);
-    }
-    let media;
-    if (o.type === 'video') {
-      media = h('video', null, {
-        muted: '', playsinline: '', loop: '', preload: 'none', 'aria-hidden': 'true',
-        poster: VID + o.ref + '-poster.webp', 'data-src': VID + o.ref + '.mp4', width: 480, height: 600
-      });
-      media.muted = true;
-      videos.push(media);
-    } else {
-      media = photoImg(o.ref, '(min-width:600px) 560px, 100vw', [720, 1080]);
-    }
-    media.classList.add('media');
-    return h('figure', 'band rv', null, [media, mark, h('div', 'band-txt', null, [h2, sub])]);
-  }
-
-  function card(item) {
-    const btn = h('button', 'ph', { type: 'button' }, [photoImg(item.photo, '(min-width:600px) 260px, 45vw', [360, 720])]);
-    btn.addEventListener('click', () => openLb(item, btn));
-    const bs = (item.badges || []).map(badge).filter(Boolean);
-    const phWrap = h('div', null, { style: 'position:relative' }, [btn]);
-    if (bs.length) phWrap.append(h('div', 'badges', null, bs));
-    const slot = h('span', 'slot'), label = h('span', 'lbl');
-    cells.push({ item, slot, label, card: true });
-    const kids = [tx(h('h3'), item, 'name')];
-    if (item.desc_short_ar) kids.push(tx(h('p', 'ds'), item, 'desc_short'));
-    kids.push(h('div', 'card-foot', null, [slot, label]));
-    return h('article', 'card frame rv', null, [phWrap, h('div', 'card-txt', null, kids)]);
-  }
-
-  function row(item, feature) {
-    const tile = h('div', 'tile', { 'aria-hidden': 'true' }, [svgUse('i-' + (item.icon || 'steak'))]);
-    const name = h('h3');
-    const nameTxt = tx(h('span'), item, 'name');
-    name.append(nameTxt);
-    (item.badges || []).map(badge).filter(Boolean).forEach(b => name.append(' ', b));
-    const end = h('div', 'end');
-    cells.push({ item, slot: end, label: null, card: false });
-    return h('li', 'row rv' + (feature ? ' feature' : ''), null, [tile, h('div', null, null, [name, tx(h('p'), item, 'desc')]), end]);
-  }
-
-  function weightToggle(sec, st) {
-    const wrap = h('div', 'wtg', { 'data-w': st.weight });
-    const grp = h('div', 'lt', { role: 'group' });
-    bind(grp, () => pick(U, 'weight_label'), { attr: 'aria-label' });
-    ['250', '330'].forEach(w => {
-      const b = h('button', null, { type: 'button', 'aria-pressed': String(w === st.weight) });
-      bind(b, () => `${w} ${unit()}`);
-      b.addEventListener('click', () => {
-        if (st.weight === w) return;
-        st.weight = w;
-        wrap.dataset.w = w;
-        $$('button', grp).forEach(x => x.setAttribute('aria-pressed', String(x === b)));
-        drawCells(sec.id);
-      });
-      grp.append(b);
+  /* ---------- dish row ---------- */
+  const dishDesc = item => mpick((MK.dishes || {})[item.id], 'desc') || pick(item, 'desc');
+  /* prices: butcher ticket tags, taken from design C */
+  const priceEl = v => h('bdi', 'price', { dir: 'ltr' }, [h('span', 'pn', null, [String(v)]), cur()]);
+  function weightTag(prices) {
+    const tag = h('div', 'ptag ptag-w');
+    WEIGHTS.forEach(w => {
+      const cell = h('span', 'tw', null, [bind(h('span', 'tw-w'), () => `${w} ${pick(U, 'weight_unit')}`)]);
+      cell.append(isNum(prices[w]) ? priceEl(prices[w]) : srAsk());
+      tag.append(cell);
     });
-    grp.append(h('span', 'lt-thumb', { 'aria-hidden': 'true' }));
-    wrap.append(tx(h('span', 'wtg-lbl', { 'aria-hidden': 'true' }), U, 'weight_label'), grp);
-    if (!st.any) wrap.hidden = true;   // R15: hidden until a price is filled in
-    return wrap;
+    return tag;
+  }
+  function dish(item) {
+    const ph = item.photo && P[item.photo] ? item.photo : null;
+    const li = h('li', 'd' + (ph ? ' feat' : ''));
+    if (ph) {
+      const btn = h('button', 'feat-ph', { type: 'button' }, [photoImg(ph, '(min-width:600px) 560px, 100vw', [720, 1080], 1080, 1350)]);
+      tx(btn, item, 'name', { attr: 'aria-label' });
+      btn.addEventListener('click', () => openLb(item, btn));
+      li.append(btn);
+    }
+    const txt = h('div', 'd-t', null, [tx(h('h3', 'd-n'), item, 'name')]);
+    const meta = (item.badges || []).filter(b => U[b + '_ar']);
+    if (meta.length) txt.append(bind(h('p', 'd-m'), () => meta.map(b => pick(U, b)).join(' · ')));
+    txt.append(bind(h('p', 'd-d'), () => dishDesc(item), { hide: true }));
+    li.append(txt);
+    if (isNum(item.price)) li.append(h('div', 'ptag', null, [priceEl(item.price)]));
+    else if (item.prices && WEIGHTS.some(w => isNum(item.prices[w]))) li.append(weightTag(item.prices));
+    else txt.append(srAsk());
+    return li;
   }
 
-  const videos = [];
+  /* ---------- section posters + dish lists, in data order ---------- */
   const menu = $('#menu');
-  D.sections.filter(s => s.id !== 'salads').forEach(sec => {
+  D.sections.forEach((sec, si) => {
+    if (sec.id === 'salads') return;
+    const n = si + 1;
     const items = D.items.filter(i => i.section === sec.id);
     const weighted = items.some(i => i.prices);
-    const vals = items.flatMap(i => (i.prices ? Object.values(i.prices) : [i.price]));
-    const st = state[sec.id] = { weight: '250', any: weighted && vals.some(isNum) };
-    const el = h('section', 'sec', { id: sec.id, 'aria-labelledby': 'h-' + sec.id }, [opener(sec)]);
-    if (vals.some(v => !isNum(v))) {
-      el.append(tx(h('p', 'note'), U, weighted ? 'price_note_weighted' : 'price_note'));
+    const vals = items.flatMap(i => (i.prices ? WEIGHTS.map(w => i.prices[w]) : [i.price]));
+    const mk = (MK.sections || {})[sec.id] || {};
+
+    const head = h('h2', 'pst-h', { id: 'h-' + sec.id });
+    const intro = h('p', 'pst-intro');
+    render(() => {
+      const t = mpick(mk, 'headline');
+      if (t) redWord(head, t, mpick(mk, 'red_word')); else rich(head, pick(sec, 'headline'));
+      intro.textContent = mpick(mk, 'intro');
+      intro.hidden = !intro.textContent;
+    });
+    const kick = h('p', 'pst-kick', null, [h('span', 'num', null, [pad(n)]), h('span', 'rule', { 'aria-hidden': 'true' }), tx(h('span'), sec, 'title')]);
+    const key = POSTERS[sec.id];
+    const poster = h('div', 'poster' + (key ? '' : ' type'));
+    if (key) {
+      const img = fadeImg({ class: 'pst-img fade', src: PST + key + '-720.webp',
+        srcset: `${PST}${key}-720.webp 720w, ${PST}${key}-1080.webp 1080w`,
+        sizes: '(min-width:600px) 560px, 100vw', width: 1080, height: 1800, alt: '' });
+      poster.append(img, h('div', 'pst-shade', { 'aria-hidden': 'true' }));
+    } else {
+      poster.append(h('span', 'pst-ghost', { 'aria-hidden': 'true' }, [pad(n)]));
     }
-    const body = h('div', 'sec-body');
-    if (weighted) body.append(weightToggle(sec, st));
-    const photoItems = items.filter(i => i.photo && P[i.photo]);
-    const rowItems = items.filter(i => !(i.photo && P[i.photo]));
-    if (photoItems.length) body.append(h('div', 'grid', null, photoItems.map(card)));
-    if (rowItems.length) body.append(h('ul', 'rows', null, rowItems.map(i => row(i, sec.id === 'specials'))));
-    el.append(body);
+    poster.append(h('div', 'pst-top', null, posterTop(n)), h('div', 'pst-txt', null, [kick, head, intro]));
+
+    const notes = h('div', 'notes');
+    if (weighted) {
+      notes.append(h('div', 'wplate', { 'aria-hidden': 'true' }, [
+        h('span', 'num', null, [WEIGHTS[0]]), h('span', 'sl', null, ['/']), h('span', 'num', null, [WEIGHTS[1]]),
+        bind(h('span', 'u'), () => pick(U, 'weight_unit'))
+      ]), tx(h('p', 'sr'), U, 'weight_note'));
+    }
+    if (vals.some(v => !isNum(v))) notes.append(tx(h('p', 'note'), U, 'price_note'));
+
+    const el = h('section', 'sec', { id: sec.id, 'aria-labelledby': 'h-' + sec.id }, [
+      poster, notes, h('ol', 'dl', null, items.map((it, k) => dish(it, k + 1)))
+    ]);
     menu.append(el);
   });
 
   /* ---------- chips ---------- */
   const track = $('#chips'), line = $('.chip-line', track);
   const chipMap = {};
-  D.sections.forEach(sec => {
-    const a = tx(h('a', 'chip', { href: '#' + sec.id }), sec, 'chip');
+  D.sections.forEach((sec, si) => {
+    const a = h('a', 'chip', { href: '#' + sec.id }, [h('span', 'num', { 'aria-hidden': 'true' }, [pad(si + 1)]), tx(h('span'), sec, 'chip')]);
     chipMap[sec.id] = a;
     track.append(a);
   });
+  const bar = $('#bar');
   let activeId = null;
   function placeLine() {
     const a = chipMap[activeId];
@@ -284,49 +292,16 @@
     }
   }
 
-  /* ---------- observers ---------- */
-  const bar = $('#bar');
-  const hasIO = 'IntersectionObserver' in window;
-  if (hasIO) {
+  if ('IntersectionObserver' in window) {
     new IntersectionObserver(([e]) => {
       bar.classList.toggle('on', e.intersectionRatio < 0.2);
       if (bar.classList.contains('on')) placeLine();
     }, { threshold: [0, 0.2, 0.4] }).observe($('#top'));
-
     const secIO = new IntersectionObserver(es => {
       es.forEach(e => { if (e.isIntersecting) setActive(e.target.id); });
     }, { rootMargin: '-45% 0px -54% 0px' });
     D.sections.forEach(s => { const el = document.getElementById(s.id); if (el) secIO.observe(el); });
   } else bar.classList.add('on');
-
-  // reveal: one observer, unobserve after the first reveal; 50 ms stagger within a parent
-  const rv = $$('.rv');
-  const groups = new Map();
-  rv.forEach(el => {
-    const p = el.parentElement, n = groups.get(p) || 0;
-    groups.set(p, n + 1);
-    if (n) el.style.setProperty('--d', Math.min(n, 6) * 50 + 'ms');
-  });
-  if (RM || !hasIO) rv.forEach(el => el.classList.add('in'));
-  else {
-    const io = new IntersectionObserver(es => es.forEach(e => {
-      if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
-    }), { rootMargin: '0px 0px -8% 0px' });
-    rv.forEach(el => io.observe(el));
-  }
-
-  // videos: src only near view, play at >= 50 % visible, pause below; never under reduced motion / Save-Data / 2g
-  if (!LITE && hasIO) {
-    const vio = new IntersectionObserver(es => es.forEach(e => {
-      const v = e.target;
-      if (e.intersectionRatio >= 0.5) {
-        if (!v.getAttribute('src')) v.src = v.dataset.src;
-        const p = v.play();
-        if (p && p.catch) p.catch(() => {});
-      } else if (!v.paused) v.pause();
-    }), { threshold: [0, 0.5] });
-    videos.forEach(v => vio.observe(v));
-  }
 
   /* ---------- language ---------- */
   function resolveLang() {
@@ -335,10 +310,11 @@
     let s = null;
     try { s = localStorage.getItem('amasina.lang'); } catch (e) { /* storage blocked */ }
     if (s === 'ar' || s === 'he') return s;
-    // first ar/he in preference order wins
     const first = (navigator.languages || [navigator.language || '']).find(l => /^(ar|he)/i.test(l)) || '';
     return /^he/i.test(first) ? 'he' : 'ar';
   }
+  const other = () => (lang === 'ar' ? 'he' : 'ar');
+  const ltBar = $('#lt-bar');
   function setLang(l, first) {
     lang = l;
     const root = document.documentElement;
@@ -346,16 +322,16 @@
     root.dir = 'rtl';
     try { localStorage.setItem('amasina.lang', l); } catch (e) { /* storage blocked */ }
     applyBinds();
-    drawCells();
     fillLb();
     document.title = TITLES[l];
     $$('.lt [data-lang]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.lang === l)));
-    if (!first) {
-      requestAnimationFrame(placeLine);
-      if (!RM && document.body.animate) $('.page').animate([{ opacity: 0.25 }, { opacity: 1 }], { duration: 180, easing: 'ease-out' });
-    }
+    ltBar.textContent = U['lang_' + other() + '_label'];
+    ltBar.lang = other();
+    ltBar.setAttribute('aria-label', pick(U, 'lang_label') + ': ' + U['lang_' + other() + '_label']);
+    if (!first) requestAnimationFrame(placeLine);
   }
   $$('.lt [data-lang]').forEach(b => b.addEventListener('click', () => { if (b.dataset.lang !== lang) setLang(b.dataset.lang); }));
+  ltBar.addEventListener('click', () => setLang(other()));
 
   setLang(resolveLang(), true);
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(placeLine);
