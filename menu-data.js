@@ -139,9 +139,12 @@ window.MENU_DATA = {
       "title_he": "מהמטבח של השף מנסור",
       "items": [
         "g27",
+        "g14",
         "g13",
         "g37",
-        "g17"
+        "g15",
+        "g17",
+        "g35"
       ]
     },
     "reels": {
@@ -197,8 +200,10 @@ window.MENU_DATA = {
         "type": "type"
       },
       "gallery": [
-        "g24",
-        "g36"
+        "g19",
+        "g21",
+        "g36",
+        "g24"
       ]
     },
     {
@@ -230,10 +235,13 @@ window.MENU_DATA = {
         "ref": "p45"
       },
       "gallery": [
-        "g18",
         "g16",
+        "g18",
+        "g12",
         "g33",
-        "g23"
+        "g23",
+        "g31",
+        "g47"
       ]
     },
     {
@@ -250,7 +258,8 @@ window.MENU_DATA = {
         "type": "type"
       },
       "gallery": [
-        "g29"
+        "g29",
+        "g48"
       ]
     },
     {
