@@ -134,19 +134,6 @@ window.MENU_DATA = {
       "strip_title_ar": "من صحوننا",
       "strip_title_he": "מהצלחות שלנו"
     },
-    "kitchen_gallery": {
-      "title_ar": "من مطبخ الشيف منصور",
-      "title_he": "מהמטבח של השף מנסור",
-      "items": [
-        "g27",
-        "g14",
-        "g13",
-        "g37",
-        "g15",
-        "g17",
-        "g35"
-      ]
-    },
     "reels": {
       "title_ar": "من قلب المطبخ",
       "title_he": "ישר מהמטבח",
