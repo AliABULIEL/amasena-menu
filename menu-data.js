@@ -76,7 +76,19 @@ window.MENU_DATA = {
         "s40",
         "s38",
         "s42",
-        "s41"
+        "s41",
+        "s39",
+        "s00",
+        "s02",
+        "s04",
+        "s06",
+        "s08",
+        "s09",
+        "s11",
+        "g01",
+        "g03",
+        "g05",
+        "g10"
       ]
     },
     "footer": {
@@ -122,7 +134,22 @@ window.MENU_DATA = {
       "lang_label_ar": "اللغة",
       "lang_label_he": "שפה",
       "table_label_ar": "طاولة السلطات",
-      "table_label_he": "שולחן הסלטים"
+      "table_label_he": "שולחן הסלטים",
+      "strip_title_ar": "من صحوننا",
+      "strip_title_he": "מהצלחות שלנו"
+    },
+    "kitchen_gallery": {
+      "title_ar": "من مطبخ الشيف منصور",
+      "title_he": "מהמטבח של השף מנסור",
+      "items": [
+        "g27",
+        "g14",
+        "g13",
+        "g37",
+        "g15",
+        "g17",
+        "g35"
+      ]
     }
   },
   "sections": [
@@ -144,7 +171,13 @@ window.MENU_DATA = {
       "chip_he": "ראשונות",
       "opener": {
         "type": "type"
-      }
+      },
+      "gallery": [
+        "g19",
+        "g21",
+        "g36",
+        "g24"
+      ]
     },
     {
       "id": "specials",
@@ -173,7 +206,16 @@ window.MENU_DATA = {
       "opener": {
         "type": "photo",
         "ref": "p45"
-      }
+      },
+      "gallery": [
+        "g16",
+        "g18",
+        "g12",
+        "g33",
+        "g23",
+        "g31",
+        "g47"
+      ]
     },
     {
       "id": "fish",
@@ -187,7 +229,11 @@ window.MENU_DATA = {
       "chip_he": "דגים",
       "opener": {
         "type": "type"
-      }
+      },
+      "gallery": [
+        "g29",
+        "g48"
+      ]
     },
     {
       "id": "world",
@@ -1051,6 +1097,198 @@ window.MENU_DATA = {
       "alt_ar": "سلطة خضار مع خبز مقلي وجبنة بيضاء وسماق",
       "alt_he": "סלט ירקות עם לחם מטוגן, גבינה לבנה וסומאק",
       "confidence": "H"
+    },
+    "g01": {
+      "src_id": 1,
+      "frame": "card",
+      "alt_ar": "سلطة فواكه وخضار على طبق زجاجي",
+      "alt_he": "סלט פירות וירקות בצלחת זכוכית",
+      "confidence": "H",
+      "use": "atmosphere"
+    },
+    "g03": {
+      "src_id": 3,
+      "frame": "card",
+      "alt_ar": "سلطة خضراء مع توت",
+      "alt_he": "סלט ירוק עם פירות יער",
+      "confidence": "H",
+      "use": "atmosphere"
+    },
+    "g05": {
+      "src_id": 5,
+      "frame": "card",
+      "alt_ar": "سلطة خضراء مع خبز محمّص",
+      "alt_he": "סלט ירוק עם קרוטונים",
+      "confidence": "H",
+      "use": "atmosphere"
+    },
+    "g10": {
+      "src_id": 10,
+      "frame": "card",
+      "alt_ar": "سلطة ملفوف مع مكسرات وجريب فروت",
+      "alt_he": "סלט כרוב עם אגוזים ואשכולית",
+      "confidence": "H",
+      "use": "atmosphere"
+    },
+    "g19": {
+      "src_id": 19,
+      "frame": "card",
+      "alt_ar": "جبنة مقلية مع صلصة حمراء",
+      "alt_he": "גבינה מטוגנת עם רוטב אדום",
+      "confidence": "H",
+      "use": "atmosphere"
+    },
+    "g21": {
+      "src_id": 21,
+      "frame": "card",
+      "alt_ar": "كلماري مقلي مع لبنة",
+      "alt_he": "קלמרי מטוגן עם לבנה",
+      "confidence": "H",
+      "use": "atmosphere"
+    },
+    "g36": {
+      "src_id": 36,
+      "frame": "card",
+      "alt_ar": "طبق مقبلات مقلية مع لبنة",
+      "alt_he": "מנת ראשונות מטוגנות עם לבנה",
+      "confidence": "H",
+      "use": "atmosphere"
+    },
+    "g24": {
+      "src_id": 24,
+      "frame": "card",
+      "alt_ar": "باذنجان بصلصة كريمية",
+      "alt_he": "חציל ברוטב שמנת",
+      "confidence": "H",
+      "use": "atmosphere"
+    },
+    "g16": {
+      "src_id": 16,
+      "frame": "card",
+      "alt_ar": "شرائح لحم مشوية على الصحن",
+      "alt_he": "נתחי בשר צלויים בצלחת",
+      "confidence": "H",
+      "use": "atmosphere"
+    },
+    "g18": {
+      "src_id": 18,
+      "frame": "card",
+      "alt_ar": "صحنا ستيك مشوي",
+      "alt_he": "שתי צלחות סטייק צלוי",
+      "confidence": "H",
+      "use": "atmosphere"
+    },
+    "g12": {
+      "src_id": 12,
+      "frame": "card",
+      "alt_ar": "أقراص لحم مشوية",
+      "alt_he": "קציצות בשר צלויות",
+      "confidence": "H",
+      "use": "atmosphere"
+    },
+    "g33": {
+      "src_id": 33,
+      "frame": "card",
+      "alt_ar": "لوح لحم مع شواية صغيرة وتوابل",
+      "alt_he": "קרש בשר עם גריל קטן ותבלינים",
+      "confidence": "H",
+      "use": "atmosphere"
+    },
+    "g23": {
+      "src_id": 23,
+      "frame": "card",
+      "alt_ar": "لوح ريش مشوية مع شواية صغيرة",
+      "alt_he": "קרש צלעות צלויות עם גריל קטן",
+      "confidence": "H",
+      "use": "atmosphere"
+    },
+    "g31": {
+      "src_id": 31,
+      "frame": "card",
+      "alt_ar": "ضلع لحم على الشواية",
+      "alt_he": "צלע בשר על הגריל",
+      "confidence": "H",
+      "use": "atmosphere"
+    },
+    "g47": {
+      "src_id": 47,
+      "frame": "card",
+      "alt_ar": "لحم على النار",
+      "alt_he": "בשר על האש",
+      "confidence": "H",
+      "use": "atmosphere"
+    },
+    "g29": {
+      "src_id": 29,
+      "frame": "card",
+      "alt_ar": "شريمبس مقلي على لوح",
+      "alt_he": "שרימפס מטוגן על קרש",
+      "confidence": "H",
+      "use": "atmosphere"
+    },
+    "g48": {
+      "src_id": 48,
+      "frame": "card",
+      "alt_ar": "شريمبس وفطر بصلصة كريمية",
+      "alt_he": "שרימפס ופטריות ברוטב שמנת",
+      "confidence": "H",
+      "use": "atmosphere"
+    },
+    "g27": {
+      "src_id": 27,
+      "frame": "card",
+      "alt_ar": "الشيف منصور على الشواية",
+      "alt_he": "השף מנסור ליד הגריל",
+      "confidence": "H",
+      "use": "atmosphere"
+    },
+    "g14": {
+      "src_id": 14,
+      "frame": "card",
+      "alt_ar": "كبة مقلية مع صلصات",
+      "alt_he": "קובה מטוגנת עם רטבים",
+      "confidence": "H",
+      "use": "atmosphere"
+    },
+    "g13": {
+      "src_id": 13,
+      "frame": "card",
+      "alt_ar": "دجاج مقرمش مع بطاطا",
+      "alt_he": "עוף פריך עם צ'יפס",
+      "confidence": "H",
+      "use": "atmosphere"
+    },
+    "g37": {
+      "src_id": 37,
+      "frame": "card",
+      "alt_ar": "رولات مقلية ودجاج بالسمسم",
+      "alt_he": "רולים מטוגנים ועוף בשומשום",
+      "confidence": "H",
+      "use": "atmosphere"
+    },
+    "g15": {
+      "src_id": 15,
+      "frame": "card",
+      "alt_ar": "لحم بصلصة الفطر",
+      "alt_he": "בשר ברוטב פטריות",
+      "confidence": "H",
+      "use": "atmosphere"
+    },
+    "g17": {
+      "src_id": 17,
+      "frame": "card",
+      "alt_ar": "دجاج بصلصة الفطر والريحان",
+      "alt_he": "עוף ברוטב פטריות ובזיליקום",
+      "confidence": "H",
+      "use": "atmosphere"
+    },
+    "g35": {
+      "src_id": 35,
+      "frame": "card",
+      "alt_ar": "صحن بصلصة الفطر",
+      "alt_he": "צלחת ברוטב פטריות",
+      "confidence": "H",
+      "use": "atmosphere"
     }
   },
   "_owner_questions": [

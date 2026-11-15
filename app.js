@@ -149,15 +149,20 @@
     return img;
   }
 
-  const gal = $('#gallery');
-  M.salad_offer.gallery.forEach((k, i) => {
-    const fig = h('figure', null, null, [
-      h('div', 'ph', null, [photoImg(k, '(min-width:600px) 420px, 76vw', [360, 720], 1080, 1350)]),
-      h('bdi', 'gnum num', { dir: 'ltr', 'aria-hidden': 'true' }, [pad(i + 1) + ' / ' + pad(M.salad_offer.gallery.length)])
-    ]);
-    if (P[k] && (P[k].caption_ar || P[k].caption_he)) fig.append(tx(h('figcaption'), P[k], 'caption', { hide: true }));
-    gal.append(fig);
-  });
+  /* photo strips: salads (named ones carry a caption), one per section, and the kitchen strip */
+  function strip(keys, el) {
+    const box = el || h('div', 'gal');
+    keys.filter(k => P[k]).forEach((k, i, all) => {
+      const fig = h('figure', null, null, [
+        h('div', 'ph', null, [photoImg(k, '(min-width:600px) 420px, 76vw', [360, 720], 1080, 1350)]),
+        h('bdi', 'gnum num', { dir: 'ltr', 'aria-hidden': 'true' }, [pad(i + 1) + ' / ' + pad(all.length)])
+      ]);
+      if (P[k].caption_ar || P[k].caption_he) fig.append(tx(h('figcaption'), P[k], 'caption', { hide: true }));
+      box.append(fig);
+    });
+    return box;
+  }
+  strip(M.salad_offer.gallery, $('#gallery'));
 
   /* ---------- prices ---------- */
   const cur = () => h('span', 'cur', null, [U.currency || '₪']);
@@ -260,8 +265,14 @@
     const el = h('section', 'sec', { id: sec.id, 'aria-labelledby': 'h-' + sec.id }, [
       poster, notes, h('ol', 'dl', null, items.map((it, k) => dish(it, k + 1)))
     ]);
+    if (sec.gallery && sec.gallery.length) el.append(tx(h('h3', 'gal-title'), U, 'strip_title'), strip(sec.gallery));
     menu.append(el);
   });
+
+  const KG = M.kitchen_gallery;
+  if (KG && KG.items && KG.items.length) {
+    menu.append(h('section', 'sec kitchen', { 'aria-label': 'gallery' }, [tx(h('h3', 'gal-title'), KG, 'title'), strip(KG.items)]));
+  }
 
   /* ---------- chips ---------- */
   const track = $('#chips'), line = $('.chip-line', track);
