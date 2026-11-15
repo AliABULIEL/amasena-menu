@@ -15,7 +15,7 @@
   const WEIGHTS = ['250', '330'];
   const TITLES = { ar: 'أماسينا | المنيو', he: 'אמסינה | תפריט' };
   /* section posters: atmosphere photos only, never labelled as a dish; null = typographic poster */
-  const POSTERS = { starters: 'pst-chef', specials: 'pst-cut', meats: 'pst-grill', fish: null, world: null };
+  const POSTERS = { starters: 'pst-chef', specials: 'pst-cut', meats: 'pst-meat', fish: 'pst-sea', world: null };
   let lang = 'ar';
   /* lock poster height to the first screen (no jump when the mobile URL bar hides) */
   const lockH = () => document.documentElement.style.setProperty('--sh', window.innerHeight + 'px');
